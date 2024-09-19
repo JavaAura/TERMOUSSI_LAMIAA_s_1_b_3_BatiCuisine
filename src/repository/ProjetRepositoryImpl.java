@@ -21,93 +21,91 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 
 	    @Override
 	    public void save(Projet projet) {
-	            String sql = "INSERT INTO projet(nom_projet, marge_beneficiaire, cout_total, etat_projet, client_id) VALUES (?, ?, ?, ?, ?)";
-	            try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-	                statement.setString(1, projet.getNomProjet());
-	                statement.setDouble(2, projet.getMargeBeneficiaire());
-	                statement.setDouble(3, projet.getCoutTotal());
-	                statement.setString(4, projet.getEtatProjet().name()); 
-	                statement.setInt(5, projet.getClient().getId());
-	                statement.executeUpdate();
+	    	   String sql = "INSERT INTO projet (nom_projet, marge_beneficiaire, cout_total, etat_projet, client_id) VALUES (?, ?, ?, ?, ?)";
+	    	    try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+	    	        pstmt.setString(1, projet.getNomProjet());
+	    	        pstmt.setDouble(2, projet.getMargeBeneficiaire());
+	    	        pstmt.setDouble(3, projet.getCoutTotal());
+	    	        pstmt.setString(4, projet.getEtatProjet().toString());
+	    	        pstmt.setInt(5, projet.getIdClient());
+	    	        pstmt.executeUpdate();
 
-	                ResultSet generatedKeys = statement.getGeneratedKeys();
-	                if (generatedKeys.next()) {
-	                    projet.setId(generatedKeys.getInt(1));
-	                }
-	            } catch (SQLException e) {
-	                System.err.println("Erreur lors de l'insertion du projet: " + e.getMessage());
-	                throw new RuntimeException(e);
-	            }
-	         
+	    	        ResultSet generatedKeys = pstmt.getGeneratedKeys();
+	    	        if (generatedKeys.next()) {
+	    	            projet.setId(generatedKeys.getInt(1));
+	    	            System.out.println("Projet ajouté avec succès : " + projet);
+	    	        }
+	    	    } catch (SQLException e) {
+	    	        System.err.println("Erreur lors de l'ajout du projet : " + projet.getNomProjet());
+	    	        e.printStackTrace();
+	    	    }
 	    }
 
 	    @Override
 	    public void update(Projet projet) {
-	        String sql = "UPDATE projet SET nom_projet = ?, marge_beneficiaire = ?, cout_total = ?, etat_projet = ?, client_id = ? WHERE id = ?";
-	        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-	            statement.setString(1, projet.getNomProjet());
-	            statement.setDouble(2, projet.getMargeBeneficiaire());
-	            statement.setDouble(3, projet.getCoutTotal());
-	            statement.setString(4, projet.getEtatProjet().name());
-	            statement.setInt(5, projet.getClient().getId());
-	            statement.setInt(6, projet.getId());
-
-	            int rowsAffected = statement.executeUpdate();
-	            if (rowsAffected > 0) {
-	                System.out.println("Projet avec ID " + projet.getId() + " est modifié avec succés.");
-	            } else {
-	                System.out.println("Aucun projet trouvé avec ID " + projet.getId() + ".");
-	            }
-	        } catch (SQLException e) {
-	            System.err.println("Erreur lors de la mise à jour du projet: " + e.getMessage());
-	            throw new RuntimeException(e);
-	        }
+	    	  String sql = "UPDATE projet SET nom_projet = ?, marge_beneficiaire = ?, cout_total = ?, etat_projet = ?, client_id = ? WHERE id = ?";
+	    	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	    	        pstmt.setString(1, projet.getNomProjet());
+	    	        pstmt.setDouble(2, projet.getMargeBeneficiaire());
+	    	        pstmt.setDouble(3, projet.getCoutTotal());
+	    	        pstmt.setString(4, projet.getEtatProjet().toString());
+	    	        pstmt.setInt(5, projet.getIdClient());
+	    	        pstmt.setInt(6, projet.getId());
+	    	        
+	    	        int rowsAffected = pstmt.executeUpdate();
+	    	        if (rowsAffected > 0) {
+	    	            System.out.println("Projet avec l'id " + projet.getId() + " a été mis à jour avec succès.");
+	    	        } else {
+	    	            System.out.println("Aucun projet trouvé avec l'id : " + projet.getId() + ". Mise à jour échouée.");
+	    	        }
+	    	    } catch (SQLException e) {
+	    	        System.err.println("Erreur lors de la mise à jour du projet avec l'id : " + projet.getId());
+	    	        e.printStackTrace();
+	    	    }
 	    }
 
 	    @Override
 	    public void delete(int projetId) {
-	        String sql = "DELETE FROM projet WHERE id = ?";
-	        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-	            statement.setInt(1, projetId);
-	            int rowsAffected = statement.executeUpdate();
+	    	String sql = "DELETE FROM projet WHERE id = ?";
+	        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	            pstmt.setInt(1, projetId);
+	            int rowsAffected = pstmt.executeUpdate();
+
 	            if (rowsAffected > 0) {
-	                System.out.println("Projet avec ID " + projetId + " est supprimé avec succés.");
+	                System.out.println("Projet avec l'id " + projetId + " a été supprimé avec succès.");
 	            } else {
-	                System.out.println("Aucun projet trouvé avec ID " + projetId + ".");
+	                System.out.println("Aucun projet trouvé avec l'id : " + projetId + ". Suppression échouée.");
 	            }
 	        } catch (SQLException e) {
-	            System.err.println("Erreur lors de la suppression du projet: " + e.getMessage());
-	            throw new RuntimeException(e);
+	            System.err.println("Erreur lors de la suppression du projet avec l'id : " + projetId);
+	            e.printStackTrace();
 	        }
 	    }
 
 	    @Override
 	    public Projet findById(int id) {
-	        String sql = "SELECT * FROM projet WHERE id = ?";
-	        Projet projet = null;
-	        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-	            statement.setInt(1, id);
-	            ResultSet resultSet = statement.executeQuery();
-
-	            if (resultSet.next()) {
-	                projet = new Projet();
-	                projet.setId(resultSet.getInt("id"));
-	                projet.setNomProjet(resultSet.getString("nom_projet"));
-	                projet.setMargeBeneficiaire(resultSet.getDouble("marge_beneficiaire"));
-	                projet.setCoutTotal(resultSet.getDouble("cout_total"));
-	               //TODO: enum upper case check
-	                projet.setEtatProjet(EtatProjet.valueOf(resultSet.getString("etat_projet"))); 
-	                int clientId = resultSet.getInt("client_id");
-	                Client client = new Client();
-	                client.setId(clientId); 
-	                projet.setClient(client);
-	            } else {
-	                System.out.println("Aucun projet trouvé avec ID " + id + ".");
-	            }
-	        } catch (SQLException e) {
-	            System.err.println("Erreur lors de la recherche du projet: " + e.getMessage());
-	            throw new RuntimeException(e);
-	        }
-	        return projet; 
+	    	 Projet projet = null;
+	    	    String sql = "SELECT * FROM projet WHERE id = ?";
+	    	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	    	        pstmt.setInt(1, id);
+	    	        ResultSet rs = pstmt.executeQuery();
+	    	        
+	    	        if (rs.next()) {
+	    	            projet = new Projet();
+	    	            projet.setId(rs.getInt("id"));
+	    	            projet.setNomProjet(rs.getString("nom_projet"));
+	    	            projet.setMargeBeneficiaire(rs.getDouble("marge_beneficiaire"));
+	    	            projet.setCoutTotal(rs.getDouble("cout_total"));
+	    	            projet.setEtatProjet(EtatProjet.valueOf(rs.getString("etat_projet")));
+	    	            projet.setIdClient(rs.getInt("client_id"));
+	    	            System.out.println("Projet trouvé : " + projet);
+	    	        } else {
+	    	            System.out.println("Aucun projet trouvé avec l'id : " + id);
+	    	        }
+	    	    } catch (SQLException e) {
+	    	        System.err.println("Erreur lors de la récupération du projet avec l'id : " + id);
+	    	        e.printStackTrace();
+	    	    }
+	    	    return projet;
 	    }
 }

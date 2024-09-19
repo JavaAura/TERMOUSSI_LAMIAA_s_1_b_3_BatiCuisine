@@ -7,17 +7,17 @@ public class Projet {
 	    private double margeBeneficiaire;
 	    private double coutTotal;
 	    private EtatProjet etatProjet;  
-	    private Client client;  
+	    private int idClient;  
 	    
 	    public Projet() {
 	    }
 
-	    public Projet( String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
+	    public Projet( String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, int idClient) {
 	        this.nomProjet = nomProjet;
 	        this.margeBeneficiaire = margeBeneficiaire;
 	        this.coutTotal = coutTotal;
 	        this.etatProjet = etatProjet;
-	        this.client = client;
+	        this.setIdClient(idClient);
 	    }
 	    
 	    public int getId() {
@@ -59,14 +59,14 @@ public class Projet {
 	    public void setEtatProjet(EtatProjet etatProjet) {
 	        this.etatProjet = etatProjet;
 	    }
+	    
+		public int getIdClient() {
+			return idClient;
+		}
 
-	    public Client getClient() {
-	        return client;
-	    }
-
-	    public void setClient(Client client) {
-	        this.client = client;
-	    }
+		public void setIdClient(int idClient) {
+			this.idClient = idClient;
+		}
 
 	    @Override
 	    public String toString() {
@@ -79,4 +79,6 @@ public class Projet {
 	                ", client=" + client +
 	                '}';
 	    }
+
+	
 }
