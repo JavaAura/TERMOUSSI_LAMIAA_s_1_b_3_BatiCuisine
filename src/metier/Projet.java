@@ -9,6 +9,9 @@ public class Projet {
 	    private EtatProjet etatProjet;  
 	    private Client client;  
 	    
+	    public Projet() {
+	    }
+
 	    public Projet(int id, String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, Client client) {
 	        this.id = id;
 	        this.nomProjet = nomProjet;
