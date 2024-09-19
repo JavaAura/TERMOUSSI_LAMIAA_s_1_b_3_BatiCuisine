@@ -11,14 +11,13 @@ public class Client {
     public Client() {
     }
 
-    public Client(int id, String nom, String adresse, String email, String telephone) {
-        this.id = id;
+    public Client(String nom, String adresse, String email, String telephone) {
         this.nom = nom;
         this.adresse = adresse;
         this.email = email;
         this.telephone = telephone;
     }
-
+    
     public int getId() {
         return id;
     }
