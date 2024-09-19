@@ -19,24 +19,21 @@ public class ClientRepositoryImpl implements ClientRepository{
 	    
 	    @Override
 	    public void save(Client client) {
-	    	if (client.getId() == 0) {//!!
-	            String sql = "INSERT INTO client(nom, adresse, email, telephone) VALUES (?, ?, ?, ?)";
-	            try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-	                statement.setString(1, client.getNom());
-	                statement.setString(2, client.getAdresse());
-	                statement.setString(3, client.getEmail());
-	                statement.setString(4, client.getTelephone());
-	                statement.executeUpdate();
-
-	                ResultSet generatedKeys = statement.getGeneratedKeys();
+	    	String sql = "INSERT INTO client (nom, adresse, email, telephone) VALUES (?, ?, ?, ?)";
+	        try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+	            pstmt.setString(1, client.getNom());
+	            pstmt.setString(2, client.getAdresse());
+	            pstmt.setString(3, client.getEmail());
+	            pstmt.setString(4, client.getTelephone());
+	            pstmt.executeUpdate();
+	            
+	            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
 	                if (generatedKeys.next()) {
 	                    client.setId(generatedKeys.getInt(1));
 	                }
-	            } catch (SQLException e) {
-	                e.printStackTrace();
 	            }
-	        } else {
-	            update(client);//!!
+	        } catch (SQLException e) {
+	            e.printStackTrace();
 	        }
 	    }
 
@@ -73,7 +70,7 @@ public class ClientRepositoryImpl implements ClientRepository{
 	    	            client.setEmail(resultSet.getString("email"));
 	    	            client.setTelephone(resultSet.getString("telephone"));
 	    	        } else {
-	    	            System.out.println("No client found with ID " + id + ".");
+	    	            System.out.println("Aucun client trouvé avec ID " + id + ".");
 	    	        }
 	    	    } catch (SQLException e) {
 	    	        System.err.println("Erreur lors de la recherche du client: " + e.getMessage());
@@ -94,7 +91,7 @@ public class ClientRepositoryImpl implements ClientRepository{
 
 	            int rowsAffected = statement.executeUpdate();
 	            if (rowsAffected > 0) {
-	                System.out.println("Client with ID " + client.getId() + " has been updated.");
+	                System.out.println("Client avec ID " + client.getId() + " est modifié avec succés.");
 	            } else {
 	                System.out.println("No client found with ID " + client.getId() + ".");
 	            }

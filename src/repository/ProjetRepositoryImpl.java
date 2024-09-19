@@ -21,7 +21,6 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 
 	    @Override
 	    public void save(Projet projet) {
-	        if (projet.getId() == 0) {
 	            String sql = "INSERT INTO projet(nom_projet, marge_beneficiaire, cout_total, etat_projet, client_id) VALUES (?, ?, ?, ?, ?)";
 	            try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 	                statement.setString(1, projet.getNomProjet());
@@ -39,9 +38,7 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 	                System.err.println("Erreur lors de l'insertion du projet: " + e.getMessage());
 	                throw new RuntimeException(e);
 	            }
-	        } else {
-	            update(projet);
-	        }
+	         
 	    }
 
 	    @Override

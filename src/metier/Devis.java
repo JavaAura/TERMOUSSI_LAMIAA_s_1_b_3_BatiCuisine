@@ -11,8 +11,7 @@ public class Devis {
 	    private boolean accepte;        
 	    private Projet projet;        
 
-	    public Devis(int id, double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, Projet projet) {
-	        this.id = id;
+	    public Devis( double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, Projet projet) {
 	        this.montantEstime = montantEstime;
 	        this.dateEmission = dateEmission;
 	        this.dateValidite = dateValidite;
