@@ -6,14 +6,13 @@ public class Composant {
     private String nom;           
     private double tauxTVA;       
     private TypeComposant typeComposant;  
-    private Projet projet;     
+    private int idProjet;     
 
-    public Composant(int id, String nom, double tauxTVA, TypeComposant typeComposant, Projet projet) {
-        this.id = id;
+    public Composant( String nom, double tauxTVA, TypeComposant typeComposant, int idProjet) {
         this.nom = nom;
         this.tauxTVA = tauxTVA;
         this.typeComposant = typeComposant;
-        this.projet = projet;
+        this.idProjet=idProjet;
     }
     
     public int getId() {
@@ -48,13 +47,13 @@ public class Composant {
         this.typeComposant = typeComposant;
     }
 
-    public Projet getProjet() {
-        return projet;
-    }
+    public int getIdProjet() {
+		return idProjet;
+	}
 
-    public void setProjet(Projet projet) {
-        this.projet = projet;
-    }
+	public void setIdProjet(int idProjet) {
+		this.idProjet = idProjet;
+	}
 
     @Override
     public String toString() {
@@ -63,7 +62,9 @@ public class Composant {
                 ", nom='" + nom + '\'' +
                 ", tauxTVA=" + tauxTVA +
                 ", typeComposant=" + typeComposant +
-                ", projet=" + projet +
+                ", idProjet=" + idProjet +
                 '}';
     }
+
+	
 }

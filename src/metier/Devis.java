@@ -19,7 +19,7 @@ public class Devis {
 	        this.dateEmission = dateEmission;
 	        this.dateValidite = dateValidite;
 	        this.accepte = accepte;
-	        this.setIdProjet(idProjet);
+	        this.idProjet=idProjet;
 	    }
 	    
 	    public int getId() {
@@ -68,7 +68,7 @@ public class Devis {
 		public void setIdProjet(int idProjet) {
 			this.idProjet = idProjet;
 		}
-}
+
 	  
 	    @Override
 	    public String toString() {
@@ -78,7 +78,8 @@ public class Devis {
 	                ", dateEmission=" + dateEmission +
 	                ", dateValidite=" + dateValidite +
 	                ", accepte=" + accepte +
-	                ", projet=" + projet +
+	                ", idProjet=" + idProjet +
 	                '}';
 	    }
+}
 	

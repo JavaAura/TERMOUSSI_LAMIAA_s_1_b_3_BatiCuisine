@@ -17,7 +17,7 @@ public class Projet {
 	        this.margeBeneficiaire = margeBeneficiaire;
 	        this.coutTotal = coutTotal;
 	        this.etatProjet = etatProjet;
-	        this.setIdClient(idClient);
+	        this.idClient=idClient;
 	    }
 	    
 	    public int getId() {
@@ -76,7 +76,7 @@ public class Projet {
 	                ", margeBeneficiaire=" + margeBeneficiaire +
 	                ", coutTotal=" + coutTotal +
 	                ", etatProjet=" + etatProjet +
-	                ", client=" + client +
+	                ", idClient=" + idClient +
 	                '}';
 	    }
 
