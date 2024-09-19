@@ -20,55 +20,91 @@ public class DevisRepositoryImpl  implements DevisRepository  {
     
     @Override
     public void save(Devis devis) {
-    	  String sql = "INSERT INTO devis(montant_estime, date_emission, date_validite, accepte, projet_id) VALUES (?, ?, ?, ?, ?)";
-          try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-              statement.setDouble(1, devis.getMontantEstime());
-              statement.setDate(2, java.sql.Date.valueOf(devis.getDateEmission()));
-              statement.setDate(3, java.sql.Date.valueOf(devis.getDateValidite()));
-              statement.setBoolean(4, devis.isAccepte());
-              statement.setInt(5, devis.getProjet().getId());
-              statement.executeUpdate();
+    	  String sql = "INSERT INTO devis (montant_estime, date_emission, date_validite, accepte, projet_id) VALUES (?, ?, ?, ?, ?)";
+          try (PreparedStatement pstmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+              pstmt.setDouble(1, devis.getMontantEstime());
+              pstmt.setDate(2, java.sql.Date.valueOf(devis.getDateEmission()));
+              pstmt.setDate(3, java.sql.Date.valueOf(devis.getDateValidite()));
+              pstmt.setBoolean(4, devis.isAccepte());
+              pstmt.setInt(5, devis.getIdProjet());
+              pstmt.executeUpdate();
 
-              ResultSet generatedKeys = statement.getGeneratedKeys();
+              ResultSet generatedKeys = pstmt.getGeneratedKeys();
               if (generatedKeys.next()) {
                   devis.setId(generatedKeys.getInt(1));
+                  System.out.println("Devis ajouté avec succès : " + devis);
               }
           } catch (SQLException e) {
-              System.err.println("Erreur lors de l'insertion du devis: " + e.getMessage());
-              throw new RuntimeException(e);
+              System.err.println("Erreur lors de l'ajout du devis : " + e.getMessage());
+              e.printStackTrace();
           }
     }
     
     @Override
     public Devis findById(int id) {
-    	   String sql = "SELECT * FROM devis WHERE id = ?";
-    	    Devis devis = null;
-    	    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-    	        statement.setInt(1, id);
-    	        ResultSet resultSet = statement.executeQuery();
-
-    	        if (resultSet.next()) {
-    	            devis = new Devis();
-    	            devis.setId(resultSet.getInt("id"));
-    	            devis.setMontantEstime(resultSet.getDouble("montant_estime"));
-    	            devis.setDateEmission(resultSet.getDate("date_emission").toLocalDate());
-    	            devis.setDateValidite(resultSet.getDate("date_validite").toLocalDate());
-    	            devis.setAccepte(resultSet.getBoolean("accepte"));
-
-    	            int projetId = resultSet.getInt("projet_id");
-    	            ProjetRepository projetRepository= new ProjetRepositoryImpl();
-    	            Projet projet = projetRepository.findById(projetId);
-    	            devis.setProjet(projet);
-    	        } else {
-    	            System.out.println("Aucun devis trouvé avec ID " + id + ".");
-    	        }
-    	    } catch (SQLException e) {
-    	        System.err.println("Erreur lors de la recherche du devis: " + e.getMessage());
-    	        throw new RuntimeException(e);
-    	    }
-    	    return devis;
+    	 Devis devis = null;
+         String sql = "SELECT * FROM devis WHERE id = ?";
+         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+             pstmt.setInt(1, id);
+             ResultSet rs = pstmt.executeQuery();
+             if (rs.next()) {
+                 devis = new Devis();
+                 devis.setId(rs.getInt("id"));
+                 devis.setMontantEstime(rs.getDouble("montant_estime"));
+                 devis.setDateEmission(rs.getDate("date_emission").toLocalDate());
+                 devis.setDateValidite(rs.getDate("date_validite").toLocalDate());
+                 devis.setAccepte(rs.getBoolean("accepte"));
+                 devis.setIdProjet(rs.getInt("projet_id"));
+                 System.out.println("Devis trouvé : " + devis);
+             } else {
+                 System.out.println("Aucun devis trouvé avec l'id : " + id);
+             }
+         } catch (SQLException e) {
+             System.err.println("Erreur lors de la récupération du devis avec l'id : " + id);
+             e.printStackTrace();
+         }
+         return devis;
     }
 
+    @Override
+    public void update(Devis devis) {
+        String sql = "UPDATE devis SET montant_estime = ?, date_emission = ?, date_validite = ?, accepte = ?, projet_id = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setDouble(1, devis.getMontantEstime());
+            pstmt.setDate(2, java.sql.Date.valueOf(devis.getDateEmission()));
+            pstmt.setDate(3, java.sql.Date.valueOf(devis.getDateValidite()));
+            pstmt.setBoolean(4, devis.isAccepte());
+            pstmt.setInt(5, devis.getIdProjet());
+            pstmt.setInt(6, devis.getId());
+            
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Devis avec l'id " + devis.getId() + " a été mis à jour avec succès.");
+            } else {
+                System.out.println("Aucun devis trouvé avec l'id : " + devis.getId() + ". Mise à jour échouée.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la mise à jour du devis avec l'id : " + devis.getId());
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void delete(int id) {
+        String sql = "DELETE FROM devis WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Devis avec l'id " + id + " a été supprimé avec succès.");
+            } else {
+                System.out.println("Aucun devis trouvé avec l'id : " + id + ". Suppression échouée.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la suppression du devis avec l'id : " + id);
+            e.printStackTrace();
+        }
+    }
 
 
 }

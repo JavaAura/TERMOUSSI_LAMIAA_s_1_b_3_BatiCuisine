@@ -9,17 +9,17 @@ public class Devis {
 	    private LocalDate dateEmission;  
 	    private LocalDate dateValidite; 
 	    private boolean accepte;        
-	    private Projet projet;        
+	    private int idProjet;        
 
 	    public Devis() {
 	    	
 	    }
-	    public Devis(double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, Projet projet) {
+	    public Devis(double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, int idProjet) {
 	        this.montantEstime = montantEstime;
 	        this.dateEmission = dateEmission;
 	        this.dateValidite = dateValidite;
 	        this.accepte = accepte;
-	        this.projet = projet;
+	        this.setIdProjet(idProjet);
 	    }
 	    
 	    public int getId() {
@@ -62,14 +62,14 @@ public class Devis {
 	        this.accepte = accepte;
 	    }
 
-	    public Projet getProjet() {
-	        return projet;
-	    }
-
-	    public void setProjet(Projet projet) {
-	        this.projet = projet;
-	    }
-
+		public int getIdProjet() {
+			return idProjet;
+		}
+		public void setIdProjet(int idProjet) {
+			this.idProjet = idProjet;
+		}
+}
+	  
 	    @Override
 	    public String toString() {
 	        return "Devis{" +
@@ -81,4 +81,4 @@ public class Devis {
 	                ", projet=" + projet +
 	                '}';
 	    }
-}
+	

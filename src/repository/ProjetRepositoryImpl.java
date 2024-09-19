@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import metier.Client;
 import metier.EtatProjet;
 import metier.Projet;
 
