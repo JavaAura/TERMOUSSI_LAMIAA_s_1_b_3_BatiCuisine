@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import database.DbConnection;
 import metier.Devis;
 
 
@@ -13,8 +14,9 @@ public class DevisRepositoryImpl  implements DevisRepository  {
 	
 	private Connection connection;
 
-    public DevisRepositoryImpl(Connection connection) {
-        this.connection = connection;
+    public DevisRepositoryImpl() {
+        this.connection = DbConnection.getInstance().getConnection();
+
     }
     
     @Override

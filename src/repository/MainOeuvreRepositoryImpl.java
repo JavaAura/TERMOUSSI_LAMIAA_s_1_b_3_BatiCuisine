@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import database.DbConnection;
 import metier.MainOeuvre;
 import metier.TypeMainOeuvre;
 
@@ -12,8 +13,9 @@ public class MainOeuvreRepositoryImpl  implements MainOeuvreRepository{
     
     private Connection connection;
 
-    public MainOeuvreRepositoryImpl(Connection connection) {
-        this.connection = connection;
+    public MainOeuvreRepositoryImpl() {
+        this.connection = DbConnection.getInstance().getConnection();
+
     }
     
     @Override

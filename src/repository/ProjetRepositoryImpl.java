@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import database.DbConnection;
 import metier.EtatProjet;
 import metier.Projet;
 
@@ -14,8 +15,8 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 	
 	 private Connection connection;
 
-	    public ProjetRepositoryImpl(Connection connection) {
-	        this.connection = connection;
+	    public ProjetRepositoryImpl() {
+	        this.connection = DbConnection.getInstance().getConnection();
 	    }
 
 	    @Override

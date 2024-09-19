@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import database.DbConnection;
 import metier.Composant;
 import metier.TypeComposant;
 
@@ -12,9 +13,10 @@ public class ComposantRepositoryImpl implements ComposantRepository {
 	
     private Connection connection;
 
-    public ComposantRepositoryImpl(Connection connection) {
-        this.connection = connection;
+    public ComposantRepositoryImpl() {
+        this.connection = DbConnection.getInstance().getConnection();
     }
+
     
     @Override
     public void save(Composant composant) {

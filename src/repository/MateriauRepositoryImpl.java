@@ -5,14 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import database.DbConnection;
 import metier.Materiau;
 
 public class MateriauRepositoryImpl implements MateriauRepository {
 
 	private Connection connection;
 
-    public MateriauRepositoryImpl(Connection connection) {
-        this.connection = connection;
+    public MateriauRepositoryImpl() {
+        this.connection = DbConnection.getInstance().getConnection();
     }
     
     @Override
