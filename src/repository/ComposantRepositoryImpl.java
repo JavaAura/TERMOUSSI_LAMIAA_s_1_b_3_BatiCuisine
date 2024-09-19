@@ -23,7 +23,7 @@ public class ComposantRepositoryImpl implements ComposantRepository {
             pstmt.setString(1, composant.getNom());
             pstmt.setDouble(2, composant.getTauxTVA());
             pstmt.setString(3, composant.getTypeComposant().toString()); 
-            pstmt.setInt(4, composant.getProjet().getId());
+            pstmt.setInt(4, composant.getIdProjet());
             pstmt.executeUpdate();
 
             ResultSet generatedKeys = pstmt.getGeneratedKeys();
