@@ -16,13 +16,13 @@
 -- CREATE TYPE TypeComposant AS ENUM ('materiau', 'mainoeuvre');
 -- CREATE TYPE TypeMainOeuvre AS ENUM ('de_base', 'specialiste');
 
--- CREATE TABLE client (
---     id SERIAL PRIMARY KEY,
---     nom VARCHAR(255) NOT NULL,
---     adresse VARCHAR(255) NOT NULL,
---     email VARCHAR(255),
---     telephone VARCHAR(20)
--- );
+CREATE TABLE client (
+   id SERIAL PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    adresse VARCHAR(255) NOT NULL,
+    email VARCHAR(255),  -- TODO: not null unique
+  telephone VARCHAR(20)    -- TODO: not null unique
+ );
 
 -- CREATE TABLE projet (
 --     id SERIAL PRIMARY KEY,
