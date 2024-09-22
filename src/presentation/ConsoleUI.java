@@ -164,13 +164,13 @@ public class ConsoleUI {
 
 		        System.out.print("Entrez la quantité de ce matériau : ");
 		        double quantity = scanner.nextDouble();
-
+		        scanner.nextLine();
 		        System.out.print("Entrez le coût unitaire de ce matériau (MAD/unité) : ");
 		        double unitCost = scanner.nextDouble();
-
+		        scanner.nextLine();
 		        System.out.print("Entrez le coût de transport de ce matériau (MAD) : ");
 		        double transportCost = scanner.nextDouble();
-
+		        scanner.nextLine();
 		        System.out.print("Entrez le coefficient de qualité du matériau (1.0 = standard, > 1.0 = haute qualité) : ");
 		        double qualityFactor = scanner.nextDouble();
 		        scanner.nextLine();
@@ -204,10 +204,10 @@ public class ConsoleUI {
 		      
 		        System.out.print("Entrez le taux horaire de cette main-d'œuvre (MAD/h) : ");
 		        double hourlyRate = scanner.nextDouble();
-
+		        scanner.nextLine();
 		        System.out.print("Entrez le nombre d'heures travaillées : ");
 		        double hoursWorked = scanner.nextDouble();
-
+		        scanner.nextLine();
 		        System.out.print("Entrez le facteur de productivité (1.0 = standard, > 1.0 = haute productivité) : ");
 		        double productivityFactor = scanner.nextDouble();
 		        scanner.nextLine(); 
@@ -260,23 +260,24 @@ public class ConsoleUI {
 		    if (projetOptional.isPresent()) {
 		        Projet createdProjet = projetOptional.get();
 		        System.out.println("Projet créé avec succès : " + createdProjet.getNomProjet());
+		        double totalCost = projet.calculateTotalCost(materiaux,mainOeuvres,tva,margin);
+			    // --- Enregistrement du Devis ---
+			    System.out.println("--- Enregistrement du Devis ---");
+			    System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
+			    String issueDateStr = scanner.nextLine();
+			    System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
+			    String validDateStr = scanner.nextLine();
+			    System.out.print("Entrez le montant estimé :");
+			    double montantEstime=scanner.nextDouble();
+			    LocalDate issueDate = LocalDate.parse(issueDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			    LocalDate validDate = LocalDate.parse(validDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			    Devis devis = new Devis(montantEstime, issueDate, validDate, false, createdProjet.getId()); 
+			    devisService.createDevis(devis);
+
+			    System.out.println("Devis enregistré avec succès !");
 		    } else {
 		        System.out.println("Échec de la création du projet.");
 		    }
-		    double totalCost = projet.calculateTotalCost(materiaux,mainOeuvres,tva,margin);
-		    // --- Enregistrement du Devis ---
-		    System.out.println("--- Enregistrement du Devis ---");
-		    System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
-		    String issueDateStr = scanner.nextLine();
-		    System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
-		    String validDateStr = scanner.nextLine();
-		    System.out.print("Entrez le montant estimé :");
-		    double montantEstime=scanner.nextDouble();
-		    LocalDate issueDate = LocalDate.parse(issueDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		    LocalDate validDate = LocalDate.parse(validDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		    Devis devis = new Devis(montantEstime, issueDate, validDate, false, 0);		 
-		    devisService.createDevis(devis);
-
-		    System.out.println("Devis enregistré avec succès !");
+		    
 	}
 }

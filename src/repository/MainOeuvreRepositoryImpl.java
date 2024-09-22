@@ -20,16 +20,16 @@ public class MainOeuvreRepositoryImpl  implements MainOeuvreRepository{
     
     @Override
     public void save(MainOeuvre mainOeuvre) {
-        String sql = "INSERT INTO Composant (nom, taux_TVA, type_composant, projet_id, taux_horaire, heures_travail, productivite_ouvrier, type_main_oeuvre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO mainoeuvre (nom, taux_TVA, type_composant, projet_id, taux_horaire, heures_travail, productivite_ouvrier, type_main_oeuvre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, mainOeuvre.getNom());
             pstmt.setDouble(2, mainOeuvre.getTauxTVA());
-            pstmt.setString(3, mainOeuvre.getTypeComposant().toString());
+            pstmt.setObject(3, mainOeuvre.getTypeComposant().toString().toLowerCase(), java.sql.Types.OTHER);
             pstmt.setInt(4, mainOeuvre.getIdProjet());
             pstmt.setDouble(5, mainOeuvre.getTauxHoraire());
             pstmt.setDouble(6, mainOeuvre.getHeuresTravail());
             pstmt.setDouble(7, mainOeuvre.getProductiviteOuvrier());
-            pstmt.setString(8, mainOeuvre.getTypeMainOeuvre().toString());
+            pstmt.setObject(8, mainOeuvre.getTypeMainOeuvre().toString().toLowerCase(), java.sql.Types.OTHER);   
             pstmt.executeUpdate();
 
             ResultSet generatedKeys = pstmt.getGeneratedKeys();

@@ -26,7 +26,7 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 	    	        pstmt.setString(1, projet.getNomProjet());
 	    	        pstmt.setDouble(2, projet.getMargeBeneficiaire());
 	    	        pstmt.setDouble(3, projet.getCoutTotal());
-	    	        pstmt.setString(4, projet.getEtatProjet().toString());
+	    	        pstmt.setObject(4, projet.getEtatProjet().toString().toLowerCase(), java.sql.Types.OTHER);
 	    	        pstmt.setInt(5, projet.getIdClient());
 	    	        pstmt.executeUpdate();
 
