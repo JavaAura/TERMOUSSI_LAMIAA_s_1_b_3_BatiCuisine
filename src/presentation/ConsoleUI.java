@@ -1,45 +1,45 @@
 package presentation;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 import metier.Client;
+import metier.Devis;
+import metier.EtatProjet;
 import metier.MainOeuvre;
 import metier.Materiau;
 import metier.Projet;
-import repository.ClientRepository;
-import repository.ComposantRepository;
-import repository.DevisRepository;
-import repository.MainOeuvreRepository;
-import repository.MateriauRepository;
-import repository.ProjetRepository;
+import metier.TypeMainOeuvre;
+import service.*;
 
 public class ConsoleUI {
 
-		private Scanner scanner;
-	    private ClientRepository clientRepository;
-	    private MateriauRepository materiauRepository;
-	    private MainOeuvreRepository mainOeuvreRepository;
-	    private DevisRepository devisRepository;      
-	    private ProjetRepository projetRepository;      
-	    private ComposantRepository composantRepository; 
-	
-	    public ConsoleUI(ClientRepository clientRepository, 
-	                     MateriauRepository materiauRepository, 
-	                     MainOeuvreRepository mainOeuvreRepository, 
-	                     DevisRepository devisRepository, 
-	                     ProjetRepository projetRepository, 
-	                     ComposantRepository composantRepository) {
-	        this.scanner = new Scanner(System.in);
-	        this.clientRepository = clientRepository;
-	        this.materiauRepository = materiauRepository;
-	        this.mainOeuvreRepository = mainOeuvreRepository;
-	        this.devisRepository = devisRepository;       
-	        this.projetRepository = projetRepository;      
-	        this.composantRepository = composantRepository; 
-	    }
+	private Scanner scanner;
+	private ClientService clientService;
+	private MateriauService materiauService;
+	private MainOeuvreService mainOeuvreService;
+	private DevisService devisService;
+	private ProjetService projetService;
+	private ComposantService composantService;
+
+	public ConsoleUI(ClientService clientService, 
+	                 MateriauService materiauService, 
+	                 MainOeuvreService mainOeuvreService, 
+	                 DevisService devisService, 
+	                 ProjetService projetService, 
+	                 ComposantService composantService) {
+	    this.scanner = new Scanner(System.in);
+	    this.clientService = clientService;
+	    this.materiauService = materiauService;
+	    this.mainOeuvreService = mainOeuvreService;
+	    this.devisService = devisService;
+	    this.projetService = projetService;
+	    this.composantService = composantService;
+	}
 
     public void start() {
         System.out.println("=== Bienvenue dans l'application de gestion des projets de rénovation de cuisines ===");
@@ -100,18 +100,20 @@ public class ConsoleUI {
 		    scanner.nextLine(); 
 
 		    Optional<Client> clientOptional = Optional.empty();
-
+			int clientId=0;
 		    if (choice == 1) {
+		    
 		        System.out.println("--- Recherche de client existant ---");
 		        System.out.print("Entrez l'email du client : ");
 		        String email = scanner.nextLine();
 
-		        clientOptional = clientRepository.findByEmail(email);
+		        clientOptional = clientService.getClientByEmail(email);
 
 		        if (clientOptional.isPresent()) {
 		            Client client = clientOptional.get();
 		            System.out.println("Client trouvé !");
 		            System.out.println(client.toString());
+		            clientId = client.getId();
 		            System.out.print("Souhaitez-vous continuer avec ce client ? (y/n) : ");
 		            String continueClient = scanner.nextLine();
 		            if (continueClient.equalsIgnoreCase("n")) {
@@ -121,9 +123,26 @@ public class ConsoleUI {
 		            System.out.println("Client non trouvé.");
 		            return;
 		        }
+		        //Ajouter nouveau client
 		    }else if (choice == 2) {
 		        System.out.println("--- Ajout d'un nouveau client ---");
-		        clientOptional = createNewClient();
+		        System.out.print("Entrez le nom du client: ");
+		        String nom = scanner.nextLine();
+
+		        System.out.print("Entrez l'adresse du client: ");
+		        String adresse = scanner.nextLine();
+
+		        System.out.print("Entrez l'email du client: ");
+		        String email = scanner.nextLine();
+
+		        System.out.print("Entrez le numéro de téléphone du client: ");
+		        String tel= scanner.nextLine();
+		        Client client=new Client(nom,adresse,email,tel);
+		        clientOptional = clientService.createClient(client);
+		        if (clientOptional.isPresent()) {
+		            Client createdClient = clientOptional.get();
+		            clientId = createdClient.getId(); 
+		        }
 		    }
 		    Client client = clientOptional.orElseThrow(() -> new RuntimeException("Client non disponible."));
 		    // --- Création d'un Nouveau Projet ---
@@ -156,8 +175,16 @@ public class ConsoleUI {
 		        double qualityFactor = scanner.nextDouble();
 		        scanner.nextLine();
 
-		        Materiau materiau = new Materiau(materialName, tauxTVA, idProjet, unitCost, quantity, transportCost, qualityFactor);
-		        materiaux.add(materiau);
+		        Materiau materiau = new Materiau(materialName, 0, 0, unitCost, quantity, transportCost, qualityFactor);
+
+		        Optional<Materiau> materiauOptional = materiauService.createMateriau(materiau);
+		        if (materiauOptional.isPresent()) {
+		            Materiau createdMateriau = materiauOptional.get();
+		            materiaux.add(createdMateriau);
+		            System.out.println("Matériau ajouté avec succès : " + createdMateriau.getNom());
+		        } else {
+		            System.out.println("Échec de l'ajout du matériau.");
+		        }
 
 		        System.out.print("Voulez-vous ajouter un autre matériau ? (y/n) : ");
 		        String addMaterial = scanner.nextLine();
@@ -170,9 +197,11 @@ public class ConsoleUI {
 		    boolean addMoremainOeuvres = true;
 		    while (addMoremainOeuvres) {
 		        System.out.println("--- Ajout de la main-d'œuvre ---");
+		        System.out.print("Entrez le nom du main-d'œuvre  : ");
+		        String mainOeuvreName = scanner.nextLine();
 		        System.out.print("Entrez le type de main-d'œuvre (e.g.,de_base, Specialiste) : ");
-		        String mainOeuvreType = scanner.nextLine();
-
+		        String mainOeuvreTypeInput  = scanner.nextLine().toUpperCase();
+		      
 		        System.out.print("Entrez le taux horaire de cette main-d'œuvre (MAD/h) : ");
 		        double hourlyRate = scanner.nextDouble();
 
@@ -182,10 +211,24 @@ public class ConsoleUI {
 		        System.out.print("Entrez le facteur de productivité (1.0 = standard, > 1.0 = haute productivité) : ");
 		        double productivityFactor = scanner.nextDouble();
 		        scanner.nextLine(); 
-
-		        MainOeuvre mainOeuvre = new MainOeuvre(nom, tauxTVA, idProjet, hourlyRate, hoursWorked, productivityFactor, mainOeuvreType);
-		        mainOeuvres.add(mainOeuvre);
-
+		        try {
+		        	 TypeMainOeuvre mainOeuvreType = TypeMainOeuvre.valueOf(mainOeuvreTypeInput);
+		             
+		             MainOeuvre mainOeuvre = new MainOeuvre(mainOeuvreName, 0, 0, hourlyRate, hoursWorked, productivityFactor, mainOeuvreType);
+		             
+		             Optional<MainOeuvre> mainOeuvreOptional = mainOeuvreService.createMainOeuvre(mainOeuvre);
+		            
+		             if (mainOeuvreOptional.isPresent()) {
+		                 MainOeuvre createdMainOeuvre = mainOeuvreOptional.get();
+		                 mainOeuvres.add(createdMainOeuvre);
+		                 System.out.println("Main-d'œuvre ajoutée avec succès : " + createdMainOeuvre.getNom());
+		             } else {
+		                 System.out.println("Échec de l'ajout de la main-d'œuvre.");
+		             }
+		        } catch (IllegalArgumentException e) {
+		            System.out.println("Type de main-d'œuvre invalide. Veuillez entrer DE_BASE ou SPECIALISTE.");
+		        }
+		       
 		        System.out.print("Voulez-vous ajouter un autre type de main-d'œuvre ? (y/n) : ");
 		        String addMainOeuvre = scanner.nextLine();
 		        if (addMainOeuvre.equalsIgnoreCase("n")) {
@@ -212,7 +255,28 @@ public class ConsoleUI {
 		        scanner.nextLine();
 		    }
 		    // Calculating costs
-		    Projet projet = new Projet(projectName, margeBeneficiaire, coutTotal, etatProjet, idClient);		    double totalCost = projet.calculateTotalCost(tva, margin);
+		    Projet projet = new Projet(projectName, margin, 0, EtatProjet.EN_COURS, clientId);	
+		    Optional<Projet> projetOptional = projetService.createProjet(projet);
+		    if (projetOptional.isPresent()) {
+		        Projet createdProjet = projetOptional.get();
+		        System.out.println("Projet créé avec succès : " + createdProjet.getNomProjet());
+		    } else {
+		        System.out.println("Échec de la création du projet.");
+		    }
+		    double totalCost = projet.calculateTotalCost(materiaux,mainOeuvres,tva,margin);
+		    // --- Enregistrement du Devis ---
+		    System.out.println("--- Enregistrement du Devis ---");
+		    System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
+		    String issueDateStr = scanner.nextLine();
+		    System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
+		    String validDateStr = scanner.nextLine();
+		    System.out.print("Entrez le montant estimé :");
+		    double montantEstime=scanner.nextDouble();
+		    LocalDate issueDate = LocalDate.parse(issueDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		    LocalDate validDate = LocalDate.parse(validDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		    Devis devis = new Devis(montantEstime, issueDate, validDate, false, 0);		 
+		    devisService.createDevis(devis);
 
+		    System.out.println("Devis enregistré avec succès !");
 	}
 }

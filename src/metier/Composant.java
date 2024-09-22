@@ -1,6 +1,6 @@
 package metier;
 
-public class Composant {
+public abstract class Composant {
 	
 	private int id;
     private String nom;           
@@ -56,15 +56,9 @@ public class Composant {
 	}
 
     @Override
-    public String toString() {
-        return "Composant{" +
-                "id=" + id +
-                ", nom='" + nom + '\'' +
-                ", tauxTVA=" + tauxTVA +
-                ", typeComposant=" + typeComposant +
-                ", idProjet=" + idProjet +
-                '}';
-    }
+    public abstract String toString() ;
+        
+    
 
 	
 }

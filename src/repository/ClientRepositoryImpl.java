@@ -101,6 +101,32 @@ public class ClientRepositoryImpl implements ClientRepository{
 	        }
 	    }
 
+	    @Override
+	    public Client findByEmail(String email) {
+	        String sql = "SELECT * FROM client WHERE email = ?";
+	        Client client = null;
+
+	        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+	            statement.setString(1, email);
+	            ResultSet resultSet = statement.executeQuery();
+
+	            if (resultSet.next()) {
+	                client = new Client();
+	                client.setId(resultSet.getInt("id"));
+	                client.setNom(resultSet.getString("nom"));
+	                client.setAdresse(resultSet.getString("adresse"));
+	                client.setEmail(resultSet.getString("email"));
+	                client.setTelephone(resultSet.getString("telephone"));
+	            } else {
+	                System.out.println("Aucun client trouvé avec l'email " + email + ".");
+	            }
+	        } catch (SQLException e) {
+	            System.err.println("Erreur lors de la recherche du client par email: " + e.getMessage());
+	            throw new RuntimeException(e);
+	        }
+
+	        return client;
+	    }
 
 	   
 

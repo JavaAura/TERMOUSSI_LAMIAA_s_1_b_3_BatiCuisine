@@ -22,7 +22,7 @@ public class MateriauRepositoryImpl implements MateriauRepository {
         try (PreparedStatement pstmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, materiau.getNom());
             pstmt.setDouble(2, materiau.getTauxTVA());
-            pstmt.setString(3, materiau.getTypeComposant().toString());
+            pstmt.setObject(3, materiau.getTypeComposant(), java.sql.Types.OTHER);
             pstmt.setInt(4, materiau.getIdProjet());
             pstmt.setDouble(5, materiau.getCoutUnitaire());
             pstmt.setDouble(6, materiau.getQuantite());

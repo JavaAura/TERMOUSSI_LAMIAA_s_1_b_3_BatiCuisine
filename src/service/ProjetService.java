@@ -1,6 +1,8 @@
 package service;
 
 
+import java.util.Optional;
+
 import metier.Projet;
 import repository.ProjetRepository;
 import repository.ProjetRepositoryImpl;
@@ -13,10 +15,10 @@ public class ProjetService {
 	        this.projetRepository = new ProjetRepositoryImpl();
 	    }
 
-	    public void createProjet(Projet projet) {
-	        projetRepository.save(projet);
+	    public Optional<Projet> createProjet(Projet projet) {
+	        projetRepository.save(projet);  
+	        return Optional.of(projet);   
 	    }
-
 	    public void removeProjet(int projetId) {
 	        projetRepository.delete(projetId);
 	    }

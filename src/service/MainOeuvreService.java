@@ -1,6 +1,9 @@
 package service;
 
+import java.util.Optional;
+
 import metier.MainOeuvre;
+import metier.Materiau;
 import repository.MainOeuvreRepositoryImpl;
 
 public class MainOeuvreService {
@@ -12,9 +15,11 @@ public class MainOeuvreService {
         this.mainOeuvreRepository = new MainOeuvreRepositoryImpl();
     }
 
-    public void createMainOeuvre(MainOeuvre mainOeuvre) {
+    public Optional<MainOeuvre>  createMainOeuvre(MainOeuvre mainOeuvre) {
         mainOeuvreRepository.save(mainOeuvre);
+        return Optional.of(mainOeuvre);
     }
+  
 
     public MainOeuvre getMainOeuvreById(int id) {
         return mainOeuvreRepository.findById(id);

@@ -1,5 +1,8 @@
 package service;
 
+import java.util.Optional;
+
+import metier.Client;
 import metier.Materiau;
 import repository.MateriauRepositoryImpl;
 
@@ -11,10 +14,11 @@ public class MateriauService {
 	        this.materiauRepository = new MateriauRepositoryImpl();
 	    }
 
-	    public void createMateriau(Materiau materiau) {
+	    public Optional<Materiau>  createMateriau(Materiau materiau) {
 	        materiauRepository.save(materiau);
+	        return Optional.of(materiau);
 	    }
-
+	   
 	    public Materiau getMateriauById(int id) {
 	        return materiauRepository.findById(id);
 	    }

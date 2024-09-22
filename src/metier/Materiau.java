@@ -50,10 +50,14 @@ public class Materiau extends Composant {
 	    @Override
 	    public String toString() {
 	        return "Materiau{" +
-	                "coutUnitaire=" + coutUnitaire +
-	                ", quantite=" + quantite +
-	                ", coutTransport=" + coutTransport +
-	                ", coefQualite=" + coefQualite +
-	                "} " + super.toString();
+	               "nom='" + getNom() + '\'' +
+	               ", tauxTVA=" + getTauxTVA() +
+	               ", typeComposant=" + getTypeComposant() +
+	               ", idProjet=" + getIdProjet() +
+	               ", coutUnitaire=" + coutUnitaire +
+	               ", quantite=" + quantite +
+	               ", coutTransport=" + coutTransport +
+	               ", coefQualite=" + coefQualite +
+	               '}';
 	    }
 }

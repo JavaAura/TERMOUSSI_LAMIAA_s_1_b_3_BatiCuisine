@@ -50,11 +50,15 @@ public class MainOeuvre extends Composant {
 	    @Override
 	    public String toString() {
 	        return "MainOeuvre{" +
-	                "tauxHoraire=" + tauxHoraire +
-	                ", heuresTravail=" + heuresTravail +
-	                ", productiviteOuvrier=" + productiviteOuvrier +
-	                ", typeMainOeuvre=" + typeMainOeuvre +
-	                "} " + super.toString();
+	               "nom='" + getNom() + '\'' +
+	               ", tauxTVA=" + getTauxTVA() +
+	               ", typeComposant=" + getTypeComposant() +
+	               ", idProjet=" + getIdProjet() +
+	               ", tauxHoraire=" + tauxHoraire +
+	               ", heuresTravail=" + heuresTravail +
+	               ", productiviteOuvrier=" + productiviteOuvrier +
+	               ", typeMainOeuvre=" + typeMainOeuvre +
+	               '}';
 	    }
 
 }
