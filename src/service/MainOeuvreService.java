@@ -3,6 +3,7 @@ package service;
 import java.util.List;
 import java.util.Optional;
 
+import metier.Devis;
 import metier.MainOeuvre;
 import metier.Materiau;
 import repository.MainOeuvreRepositoryImpl;
@@ -38,6 +39,11 @@ public class MainOeuvreService {
    	 List<MainOeuvre>  mainOeuvres=mainOeuvreRepository.findAll();
    	 return Optional.of(mainOeuvres);   
    }
+
+	public void updateMainOeuvreTVA(MainOeuvre mainOeuvre,double tva) {
+        mainOeuvre.setTauxTVA(tva);
+        mainOeuvreRepository.updateTVA(mainOeuvre);
+	}
     
 }
 

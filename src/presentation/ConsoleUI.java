@@ -111,10 +111,20 @@ public class ConsoleUI {
 		    		    String applyTVA = scanner.nextLine();
 		    		    double tva = 0;
 		    		    if (applyTVA.equalsIgnoreCase("y")) {
-		    		        System.out.print("Entrez le pourcentage de TVA (%) : ");
-		    		        tva = scanner.nextDouble();
-		    		        scanner.nextLine();
-		    		    }
+		                    System.out.print("Entrez le pourcentage de TVA (%) : ");
+		                    tva = scanner.nextDouble();
+		                    scanner.nextLine();
+		                    // Update the tva for materials
+		                    for (Materiau materiau : materiaux) {
+		                        materiau.setTauxTVA(tva);
+		                        materiauService.updateMateriauTVA(materiau,tva);
+		                    }
+		                    // Update the tva for labor
+		                    for (MainOeuvre mainOeuvre : mainOeuvres) {
+		                        mainOeuvreService.updateMainOeuvreTVA(mainOeuvre,tva);
+		                    }
+		                    System.out.println("TVA mise à jour avec succès pour les composants du projet : " + selectedProjet.getNomProjet());
+		                }
 
 		    		    System.out.print("Souhaitez-vous appliquer une marge bénéficiaire au projet ? (y/n) : ");
 		    		    String applyMargin = scanner.nextLine();

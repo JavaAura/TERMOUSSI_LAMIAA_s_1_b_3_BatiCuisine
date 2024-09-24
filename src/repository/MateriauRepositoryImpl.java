@@ -136,4 +136,17 @@ public class MateriauRepositoryImpl implements MateriauRepository {
             System.err.println("Erreur lors de la suppression de Materiau avec l'id : " + id);
         }
     }
+
+	public void updateTVA(Materiau materiau) {
+		 String sql = "UPDATE materiau SET taux_tva = ? WHERE id = ?";
+		    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+		        pstmt.setDouble(1, materiau.getTauxTVA()); 
+		        pstmt.setInt(2, materiau.getId()); 
+		        pstmt.executeUpdate();
+		        // System.out.println("TVA mise à jour avec succès pour le matériau avec ID : " + materiau.getId());
+		    } catch (SQLException e) {
+		        System.err.println("Erreur lors de la mise à jour de la TVA du matériau");
+		        e.printStackTrace();
+		    }		
+	}
 }

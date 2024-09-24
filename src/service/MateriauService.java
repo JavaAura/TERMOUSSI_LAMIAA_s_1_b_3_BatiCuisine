@@ -37,4 +37,10 @@ public class MateriauService {
 	    	 List<Materiau>  materiaux=materiauRepository.findAll();
 	    	 return Optional.of(materiaux);   
 	    }
+
+		public void updateMateriauTVA(Materiau materiau,double tva) {
+			materiau.setTauxTVA(tva);
+			materiauRepository.updateTVA(materiau);
+			
+		}
 }

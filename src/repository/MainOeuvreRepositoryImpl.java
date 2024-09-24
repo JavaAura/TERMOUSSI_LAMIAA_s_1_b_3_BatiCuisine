@@ -138,4 +138,18 @@ public class MainOeuvreRepositoryImpl  implements MainOeuvreRepository{
         }
     }
 
+    @Override
+	public void updateTVA(MainOeuvre mainOeuvre) {
+    	   String sql = "UPDATE mainoeuvre SET taux_tva = ? WHERE id = ?";
+    	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+    	        pstmt.setDouble(1, mainOeuvre.getTauxTVA()); 
+    	        pstmt.setInt(2, mainOeuvre.getId()); 
+    	        pstmt.executeUpdate();
+    	       // System.out.println("TVA mise à jour avec succès pour la main d'œuvre avec ID : " + mainOeuvre.getId());
+    	    } catch (SQLException e) {
+    	        System.err.println("Erreur lors de la mise à jour de la TVA de la main d'œuvre");
+    	        e.printStackTrace();
+    	    }
+	}
+
 }

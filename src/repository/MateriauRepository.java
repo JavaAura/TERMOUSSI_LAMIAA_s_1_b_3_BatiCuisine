@@ -11,4 +11,5 @@ public interface MateriauRepository {
     void update(Materiau materiau);
     void delete(int id);
     List<Materiau> findAll() ;
+    void updateTVA(Materiau materiau);
 }

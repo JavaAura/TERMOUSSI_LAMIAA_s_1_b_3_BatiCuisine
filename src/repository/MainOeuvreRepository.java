@@ -11,4 +11,5 @@ public interface MainOeuvreRepository {
     void update(MainOeuvre mainOeuvre);
     void delete(int id);
     List<MainOeuvre> findAll() ;
+    void updateTVA(MainOeuvre mainOeuvre) ;
 }

@@ -140,7 +140,7 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 	    	            projet.setCoutTotal(rs.getDouble("cout_total"));
 	    	            projet.setEtatProjet(EtatProjet.valueOf(rs.getString("etat_projet").toUpperCase()));
 	    	            projet.setIdClient(rs.getInt("client_id"));
-	    	            System.out.println("Projet trouvé : " + projet);
+	    	           // System.out.println("Projet trouvé : " + projet);
 	    	        } else {
 	    	            System.out.println("Aucun projet trouvé avec l'id : " + id);
 	    	        }
