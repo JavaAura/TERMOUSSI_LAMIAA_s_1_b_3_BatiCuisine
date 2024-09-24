@@ -5,8 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import database.DbConnection;
+import metier.Devis;
 import metier.EtatProjet;
 import metier.Projet;
 
@@ -81,7 +84,46 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 	            e.printStackTrace();
 	        }
 	    }
-
+	
+	    @Override 
+	    public void updateEtat(Projet projet,EtatProjet nouvelEtat) {
+	        String sql = "UPDATE projet SET etat_projet = ? WHERE id = ?";
+	        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	            pstmt.setObject(1, projet.getEtatProjet().toString().toLowerCase(), java.sql.Types.OTHER);
+	            pstmt.setInt(2, projet.getId()); 
+	            pstmt.executeUpdate();
+	        } catch (SQLException e) {
+	            System.err.println("Erreur lors de la mise à jour du projet");
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	    @Override
+	    public List<Projet> findAll() {
+	    	List<Projet> projets = new ArrayList<>();
+	    	String sql ="SELECT * FROM projet";
+	    	try (PreparedStatement pstmt = connection.prepareStatement(sql)){
+	    	       ResultSet rs = pstmt.executeQuery();
+	    	       while (rs.next()) {
+	    	            Projet projet = new Projet();
+	    	            projet.setId(rs.getInt("id"));
+	    	            projet.setNomProjet(rs.getString("nom_projet"));
+	    	            projet.setMargeBeneficiaire(rs.getDouble("marge_beneficiaire"));
+	    	            projet.setCoutTotal(rs.getDouble("cout_total"));
+	    	            projet.setEtatProjet(EtatProjet.valueOf(rs.getString("etat_projet").toUpperCase()));
+	    	            projet.setIdClient(rs.getInt("client_id"));
+	    	            projets.add(projet);
+	    	            if (projets.isEmpty()) {
+	    	                System.out.println("Aucun projet trouvé");
+	    	            }
+	    	        }
+	    	}catch (SQLException e) {
+    	        System.err.println("Erreur lors de la récupération des projets ");
+    	        e.printStackTrace();
+    	    }
+    	    return projets;
+	    }
+	    
 	    @Override
 	    public Projet findById(int id) {
 	    	 Projet projet = null;
@@ -96,7 +138,7 @@ public class ProjetRepositoryImpl implements ProjetRepository{
 	    	            projet.setNomProjet(rs.getString("nom_projet"));
 	    	            projet.setMargeBeneficiaire(rs.getDouble("marge_beneficiaire"));
 	    	            projet.setCoutTotal(rs.getDouble("cout_total"));
-	    	            projet.setEtatProjet(EtatProjet.valueOf(rs.getString("etat_projet")));
+	    	            projet.setEtatProjet(EtatProjet.valueOf(rs.getString("etat_projet").toUpperCase()));
 	    	            projet.setIdClient(rs.getInt("client_id"));
 	    	            System.out.println("Projet trouvé : " + projet);
 	    	        } else {

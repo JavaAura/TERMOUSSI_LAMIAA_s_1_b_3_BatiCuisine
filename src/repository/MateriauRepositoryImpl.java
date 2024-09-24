@@ -4,9 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import database.DbConnection;
+import metier.EtatProjet;
 import metier.Materiau;
+import metier.Projet;
 
 public class MateriauRepositoryImpl implements MateriauRepository {
 
@@ -39,7 +43,36 @@ public class MateriauRepositoryImpl implements MateriauRepository {
             System.err.println("Erreur lors de l'ajout de Materiau : " + e.getMessage());
         }
     }
-
+    
+    @Override
+    public List<Materiau> findAll() {
+    	 List<Materiau> materiaux= new ArrayList<>();;
+    	String sql ="SELECT * FROM materiau";
+    	try (PreparedStatement pstmt = connection.prepareStatement(sql)){
+    	       ResultSet rs = pstmt.executeQuery();
+    	       if (rs.next()) {
+    	    	   Materiau materiau = new Materiau(
+                           rs.getString("nom"),
+                           rs.getDouble("taux_TVA"),
+                           rs.getInt("projet_id"),
+                           rs.getDouble("cout_unitaire"),
+                           rs.getDouble("quantite"),
+                           rs.getDouble("cout_transport"),
+                           rs.getDouble("coef_qualite")
+                   );
+                   materiau.setId(rs.getInt("id"));
+                   materiaux.add(materiau);
+    	            if (materiaux.isEmpty()) {
+    	                System.out.println("Aucun materiau trouvé");
+    	            }
+    	        }
+    	}catch (SQLException e) {
+	        System.err.println("Erreur lors de la récupération des materiaux ");
+	        e.printStackTrace();
+	    }
+	    return materiaux;
+    }
+    
     @Override
     public Materiau findById(int id) {
         Materiau materiau = null;

@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import database.DbConnection;
 import metier.MainOeuvre;
+import metier.Materiau;
 import metier.TypeMainOeuvre;
 
 public class MainOeuvreRepositoryImpl  implements MainOeuvreRepository{
@@ -40,6 +43,35 @@ public class MainOeuvreRepositoryImpl  implements MainOeuvreRepository{
         } catch (SQLException e) {
             System.err.println("Erreur lors de l'ajout de MainOeuvre : " + e.getMessage());
         }
+    }
+    
+    @Override
+    public List<MainOeuvre> findAll() {
+    	 List<MainOeuvre> mainoeuvres= new ArrayList<>();;
+    	String sql ="SELECT * FROM mainoeuvre";
+    	try (PreparedStatement pstmt = connection.prepareStatement(sql)){
+    	       ResultSet rs = pstmt.executeQuery();
+    	       if (rs.next()) {
+    	    	   MainOeuvre mainOeuvre = new MainOeuvre(
+                           rs.getString("nom"),
+                           rs.getDouble("taux_TVA"),
+                           rs.getInt("projet_id"),
+                           rs.getDouble("taux_horaire"),
+                           rs.getDouble("heures_travail"),
+                           rs.getDouble("productivite_ouvrier"),
+                           TypeMainOeuvre.valueOf(rs.getString("type_main_oeuvre").toUpperCase())
+                   );
+                   mainOeuvre.setId(rs.getInt("id"));
+                   mainoeuvres.add(mainOeuvre);
+    	            if (mainoeuvres.isEmpty()) {
+    	                System.out.println("Aucun mainoeuvre trouvé");
+    	            }
+    	        }
+    	}catch (SQLException e) {
+	        System.err.println("Erreur lors de la récupération des mainoeuvres ");
+	        e.printStackTrace();
+	    }
+	    return mainoeuvres;
     }
     
     @Override

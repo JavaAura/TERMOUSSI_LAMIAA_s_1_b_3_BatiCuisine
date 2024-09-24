@@ -1,5 +1,8 @@
 package repository;
 
+import java.util.List;
+
+import metier.EtatProjet;
 import metier.Projet;
 
 public interface ProjetRepository {
@@ -8,4 +11,6 @@ public interface ProjetRepository {
     void update(Projet projet);
     void delete(int projetId);
     Projet findById(int id);
+    List<Projet> findAll();
+	void updateEtat(Projet projet,EtatProjet nouvelEtat);
 }

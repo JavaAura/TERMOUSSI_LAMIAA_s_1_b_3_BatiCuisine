@@ -1,5 +1,7 @@
 package repository;
 
+import java.util.List;
+
 import metier.MainOeuvre;
 
 public interface MainOeuvreRepository {
@@ -8,4 +10,5 @@ public interface MainOeuvreRepository {
     MainOeuvre findById(int id);
     void update(MainOeuvre mainOeuvre);
     void delete(int id);
+    List<MainOeuvre> findAll() ;
 }

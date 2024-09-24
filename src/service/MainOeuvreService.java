@@ -1,5 +1,6 @@
 package service;
 
+import java.util.List;
 import java.util.Optional;
 
 import metier.MainOeuvre;
@@ -32,5 +33,11 @@ public class MainOeuvreService {
     public void deleteMainOeuvre(int id) {
         mainOeuvreRepository.delete(id);
     }
+    
+    public Optional<List<MainOeuvre>>  getAllMainOeuvres() {
+   	 List<MainOeuvre>  mainOeuvres=mainOeuvreRepository.findAll();
+   	 return Optional.of(mainOeuvres);   
+   }
+    
 }
 

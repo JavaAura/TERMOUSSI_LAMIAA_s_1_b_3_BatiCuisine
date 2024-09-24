@@ -83,24 +83,7 @@ public class Projet {
 	    }
 
 	    public double calculateTotalCost(List<Materiau> materiaux, List<MainOeuvre> mainOeuvres, double tvaRate, double marginRate) {
-	    	/* 	double totalMaterialsCost = 0.0;
-	    	    double totalMainOeuvreCost = 0.0;
-
-	    	    for (Materiau materiau : materiaux) {
-	    	        double materialCost = (materiau.getCoutUnitaire() * materiau.getQuantite()) + materiau.getCoutTransport();
-	    	        totalMaterialsCost += materialCost * materiau.getCoefQualite(); 
-	    	    }
-
-	    	    for (MainOeuvre mainOeuvre : mainOeuvres) {
-	    	        double laborCost = mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail() * mainOeuvre.getProductiviteOuvrier();
-	    	        totalMainOeuvreCost += laborCost;
-	    	    }
-
-	    	    double totalCostBeforeVAT = totalMaterialsCost + totalMainOeuvreCost;
-	    	    double totalCostWithVAT = totalCostBeforeVAT * (1 + (tvaRate / 100));
-	    	    double finalTotalCost = totalCostWithVAT * (1 + (marginRate / 100));
-
-	    	    return finalTotalCost;*/
+	    
 	    	 double totalMaterialsCost = 0;
 	    	    double totalMainOeuvreCost = 0;
 	    	    
@@ -135,7 +118,7 @@ public class Projet {
 	    	    // Print the detailed breakdown
 	    	    System.out.println("--- Résultat du Calcul ---");
 	    	    System.out.println("Nom du projet : " + this.getNomProjet());
-	    	    System.out.println("Client : " + this.getIdClient());//son nom
+	    	    System.out.println("Client : " + this.getIdClient());//TODO: son nom
 	    	    System.out.println("--- Détail des Coûts ---");
 
 	    	    System.out.println("1. Matériaux :");
@@ -158,7 +141,7 @@ public class Projet {
 
 	    	    System.out.printf("3. Coût total avant marge : %.2f €%n", totalBeforeTaxes);
 	    	    System.out.printf("4. Marge bénéficiaire (%.2f%%) : %.2f €%n", marginRate, totalWithTVA * (marginRate / 100));
-	    	    System.out.printf("**Coût total final du projet : %.2f €**%n", finalTotalCost);
+	    	//    System.out.printf("**Coût total final du projet : %.2f €**%n", finalTotalCost);
 
 	    	    return finalTotalCost;
 	    }

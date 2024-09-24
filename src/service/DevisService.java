@@ -26,4 +26,14 @@ public class DevisService {
     public void deleteDevis(int id) {
         devisRepository.delete(id);
     }
+    
+    public void updateDevisAccepte(int devisId, boolean accepte) {
+    	Devis devis = getDevisById(devisId); 
+        if (devis != null) {
+            devis.setAccepte(accepte); 
+            devisRepository.updateAccepte(devis);
+        } else {
+            System.out.println("Devis not found with ID: " + devisId);
+        }
+    }
 }

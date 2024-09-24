@@ -1,9 +1,11 @@
 package service;
 
+import java.util.List;
 import java.util.Optional;
 
 import metier.Client;
 import metier.Materiau;
+import metier.Projet;
 import repository.MateriauRepositoryImpl;
 
 public class MateriauService {
@@ -29,5 +31,10 @@ public class MateriauService {
 
 	    public void deleteMateriau(int id) {
 	        materiauRepository.delete(id);
+	    }
+	    
+	    public Optional<List<Materiau>>  getAllMateriaux() {
+	    	 List<Materiau>  materiaux=materiauRepository.findAll();
+	    	 return Optional.of(materiaux);   
 	    }
 }

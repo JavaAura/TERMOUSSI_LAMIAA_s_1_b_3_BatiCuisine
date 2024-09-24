@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import metier.Client;
 import metier.Devis;
@@ -79,12 +80,100 @@ public class ConsoleUI {
     }
 
 	private void calculateProjectCost() {
-		// TODO Auto-generated method stub
-		
+			System.out.println("--- Sélection d'un projet pour calcul du coût ---");
+		    System.out.print("Entrez le nom du projet : ");
+		    String projectName = scanner.nextLine();
+		    Optional<List<Projet>> projetsOptional = projetService.getAllProjets();		    
+		    if (projetsOptional.isPresent()) {
+		        List<Projet> projets = projetsOptional.get();
+
+		        Optional<Projet> projetOptional = projets.stream()
+		                .filter(projet -> projet.getNomProjet().equalsIgnoreCase(projectName))
+		                .findFirst();
+		        if (projetOptional.isPresent()) {
+		            Projet selectedProjet = projetOptional.get();
+		            System.out.println("Projet trouvé : " + selectedProjet.getNomProjet());
+		            Optional<List<Materiau>> materiauxOptional = materiauService.getAllMateriaux();
+		            Optional<List<MainOeuvre>> mainOeuvresOptional = mainOeuvreService.getAllMainOeuvres();
+		            
+		            if (materiauxOptional.isPresent() && mainOeuvresOptional.isPresent()) {
+		                List<Materiau> allMateriaux = materiauxOptional.get();
+		                List<Materiau> materiaux = allMateriaux.stream()
+		                        .filter(materiau -> materiau.getIdProjet() == selectedProjet.getId())
+		                        .collect(Collectors.toList());
+
+		                List<MainOeuvre> allMainOeuvres = mainOeuvresOptional.get();
+		                List<MainOeuvre> mainOeuvres = allMainOeuvres.stream()
+		                        .filter(mainOeuvre -> mainOeuvre.getIdProjet() == selectedProjet.getId())
+		                        .collect(Collectors.toList());
+		                
+		                System.out.print("Souhaitez-vous appliquer une TVA au projet ? (y/n) : ");
+		    		    String applyTVA = scanner.nextLine();
+		    		    double tva = 0;
+		    		    if (applyTVA.equalsIgnoreCase("y")) {
+		    		        System.out.print("Entrez le pourcentage de TVA (%) : ");
+		    		        tva = scanner.nextDouble();
+		    		        scanner.nextLine();
+		    		    }
+
+		    		    System.out.print("Souhaitez-vous appliquer une marge bénéficiaire au projet ? (y/n) : ");
+		    		    String applyMargin = scanner.nextLine();
+		    		    double margin = 0;
+		    		    if (applyMargin.equalsIgnoreCase("y")) {
+		    		        System.out.print("Entrez le pourcentage de marge bénéficiaire (%) : ");
+		    		        margin = scanner.nextDouble();
+		    		        scanner.nextLine();
+		    		    }
+		    		    
+		                double totalCost = selectedProjet.calculateTotalCost(materiaux, mainOeuvres, tva, margin);
+		                System.out.printf("Le coût total du projet '%s' est de : %.2f €%n", selectedProjet.getNomProjet(), totalCost);
+		                //Enregistrement du Devis
+		                System.out.println("--- Enregistrement du Devis ---");
+					    System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
+					    String validDateStr = scanner.nextLine();
+				        
+					    LocalDate issueDate = LocalDate.now();
+					    LocalDate validDate = LocalDate.parse(validDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+					    double montantEstime=totalCost;
+					    Devis devis = new Devis(montantEstime, issueDate, validDate, false, selectedProjet.getId()); 
+					    devisService.createDevis(devis);
+					    //TODO: affiche details devis
+					    System.out.print("Est ce que vous acceptez le projet ? (y/n) : ");
+					    String accepte = scanner.nextLine();
+					    if (accepte.equalsIgnoreCase("y")) {
+					        devisService.updateDevisAccepte(devis.getId(), true);
+					        projetService.updateProjetEtat(selectedProjet.getId(),EtatProjet.TERMINE);
+					        System.out.println("Le projet a été accepté !");
+					    }else {
+					    	projetService.updateProjetEtat(selectedProjet.getId(),EtatProjet.ANNULE);
+					    }
+		           }else {
+		                System.out.println("Matériaux ou main-d'œuvre introuvables pour ce projet.");
+		            }
+		        }else {
+		            System.out.println("Projet non trouvé.");
+		        }
+		    } else {
+		        System.out.println("Aucun projet disponible.");
+		    }
+		    
 	}
 
 	private void displayExistingProjects() {
-		// TODO Auto-generated method stub
+	    System.out.println("--- Affichage des projets existants ---");
+	    Optional<List<Projet>> projetsOptional = projetService.getAllProjets();
+	    if (projetsOptional.isPresent()) {
+	        List<Projet> projets = projetsOptional.get();
+	        if (projets.isEmpty()) {
+	            System.out.println("Aucun projet disponible.");
+	        } else {
+	            projets.forEach(projet -> 
+	                System.out.printf("Nom: %s, État: %s, Client ID: %d%n", 
+	                projet.getNomProjet(), projet.getEtatProjet(), projet.getIdClient()));
+	        }
+	    } else {
+	        System.out.println("Erreur lors de la récupération des projets.");
+	    }
 		
 	}
 
@@ -153,10 +242,19 @@ public class ConsoleUI {
 		    System.out.print("Entrez la surface de la cuisine (en m²) : ");
 		    double surface = scanner.nextDouble();
 		    scanner.nextLine(); 
-
-		    // --- Ajout des matériaux ---
+		    Projet projet = new Projet(projectName, 0, 0, EtatProjet.EN_COURS, clientId);	
+		    Optional<Projet> projetOptional = projetService.createProjet(projet);
+		    if (projetOptional.isPresent()) {
+		        Projet createdProjet = projetOptional.get();
+		        System.out.println("Projet créé avec succès : " + createdProjet.getNomProjet());
+		    } else {
+		        System.out.println("Échec de la création du projet.");
+		    }
+		        // --- Ajout des matériaux ---
 		    List<Materiau> materiaux = new ArrayList<>();
 		    boolean addMoreMaterials = true;
+		    Projet createdProjet = projetOptional.get();
+	        int projetId=createdProjet.getId();
 		    while (addMoreMaterials) {
 		        System.out.println("--- Ajout des matériaux ---");
 		        System.out.print("Entrez le nom du matériau : ");
@@ -174,8 +272,8 @@ public class ConsoleUI {
 		        System.out.print("Entrez le coefficient de qualité du matériau (1.0 = standard, > 1.0 = haute qualité) : ");
 		        double qualityFactor = scanner.nextDouble();
 		        scanner.nextLine();
-
-		        Materiau materiau = new Materiau(materialName, 0, 0, unitCost, quantity, transportCost, qualityFactor);
+		       
+		        Materiau materiau = new Materiau(materialName, 0, projetId, unitCost, quantity, transportCost, qualityFactor);
 
 		        Optional<Materiau> materiauOptional = materiauService.createMateriau(materiau);
 		        if (materiauOptional.isPresent()) {
@@ -214,7 +312,7 @@ public class ConsoleUI {
 		        try {
 		        	 TypeMainOeuvre mainOeuvreType = TypeMainOeuvre.valueOf(mainOeuvreTypeInput);
 		             
-		             MainOeuvre mainOeuvre = new MainOeuvre(mainOeuvreName, 0, 0, hourlyRate, hoursWorked, productivityFactor, mainOeuvreType);
+		             MainOeuvre mainOeuvre = new MainOeuvre(mainOeuvreName, 0, projetId, hourlyRate, hoursWorked, productivityFactor, mainOeuvreType);
 		             
 		             Optional<MainOeuvre> mainOeuvreOptional = mainOeuvreService.createMainOeuvre(mainOeuvre);
 		            
@@ -234,50 +332,6 @@ public class ConsoleUI {
 		        if (addMainOeuvre.equalsIgnoreCase("n")) {
 		        	addMoremainOeuvres = false;
 		        }
-		    }
-		    // --- Calcul du coût total ---
-		    System.out.println("--- Calcul du coût total ---");
-		    System.out.print("Souhaitez-vous appliquer une TVA au projet ? (y/n) : ");
-		    String applyTVA = scanner.nextLine();
-		    double tva = 0;
-		    if (applyTVA.equalsIgnoreCase("y")) {
-		        System.out.print("Entrez le pourcentage de TVA (%) : ");
-		        tva = scanner.nextDouble();
-		        scanner.nextLine();
-		    }
-
-		    System.out.print("Souhaitez-vous appliquer une marge bénéficiaire au projet ? (y/n) : ");
-		    String applyMargin = scanner.nextLine();
-		    double margin = 0;
-		    if (applyMargin.equalsIgnoreCase("y")) {
-		        System.out.print("Entrez le pourcentage de marge bénéficiaire (%) : ");
-		        margin = scanner.nextDouble();
-		        scanner.nextLine();
-		    }
-		    // Calculating costs
-		    Projet projet = new Projet(projectName, margin, 0, EtatProjet.EN_COURS, clientId);	
-		    Optional<Projet> projetOptional = projetService.createProjet(projet);
-		    if (projetOptional.isPresent()) {
-		        Projet createdProjet = projetOptional.get();
-		        System.out.println("Projet créé avec succès : " + createdProjet.getNomProjet());
-		        double totalCost = projet.calculateTotalCost(materiaux,mainOeuvres,tva,margin);
-			    // --- Enregistrement du Devis ---
-			    System.out.println("--- Enregistrement du Devis ---");
-			    System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
-			    String issueDateStr = scanner.nextLine();
-			    System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
-			    String validDateStr = scanner.nextLine();
-			    System.out.print("Entrez le montant estimé :");
-			    double montantEstime=scanner.nextDouble();
-			    LocalDate issueDate = LocalDate.parse(issueDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-			    LocalDate validDate = LocalDate.parse(validDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-			    Devis devis = new Devis(montantEstime, issueDate, validDate, false, createdProjet.getId()); 
-			    devisService.createDevis(devis);
-
-			    System.out.println("Devis enregistré avec succès !");
-		    } else {
-		        System.out.println("Échec de la création du projet.");
-		    }
-		    
+		    }		    
 	}
 }

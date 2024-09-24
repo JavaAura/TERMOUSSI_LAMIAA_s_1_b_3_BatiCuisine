@@ -56,7 +56,7 @@ public class DevisRepositoryImpl  implements DevisRepository  {
                  devis.setDateValidite(rs.getDate("date_validite").toLocalDate());
                  devis.setAccepte(rs.getBoolean("accepte"));
                  devis.setIdProjet(rs.getInt("projet_id"));
-                 System.out.println("Devis trouvé : " + devis);
+               //  System.out.println("Devis trouvé : " + devis);
              } else {
                  System.out.println("Aucun devis trouvé avec l'id : " + id);
              }
@@ -66,7 +66,20 @@ public class DevisRepositoryImpl  implements DevisRepository  {
          }
          return devis;
     }
-
+    
+    @Override 
+    public void updateAccepte(Devis devis) {
+        String sql = "UPDATE devis SET accepte = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setBoolean(1, devis.isAccepte());
+            pstmt.setInt(2, devis.getId()); 
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la mise à jour du devis");
+            e.printStackTrace();
+        }
+    }
+    
     @Override
     public void update(Devis devis) {
         String sql = "UPDATE devis SET montant_estime = ?, date_emission = ?, date_validite = ?, accepte = ?, projet_id = ? WHERE id = ?";

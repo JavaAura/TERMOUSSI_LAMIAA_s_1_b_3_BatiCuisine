@@ -12,4 +12,5 @@ public interface DevisRepository {
 	    void update(Devis devis);
 
 	    void delete(int id);
+	    void updateAccepte(Devis devis);
 }
