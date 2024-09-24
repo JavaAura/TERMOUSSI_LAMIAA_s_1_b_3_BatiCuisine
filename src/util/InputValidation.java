@@ -53,7 +53,7 @@ public class InputValidation {
 	  public static boolean validateDate(String dateStr) {
 		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	        try {
-	            LocalDate date = LocalDate.parse(dateStr);
+	            LocalDate date = LocalDate.parse(dateStr,formatter);
 	            LocalDate today = LocalDate.now();
 	            return date.isAfter(today); 
 	        } catch (DateTimeParseException e) {
