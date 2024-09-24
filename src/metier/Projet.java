@@ -84,7 +84,7 @@ public class Projet {
 	                '}';
 	    }
 
-	    public double calculateTotalCost(List<Materiau> materiaux, List<MainOeuvre> mainOeuvres, double tva, double margin) {
+	    public double calculateTotalCost(List<Materiau> materiaux, List<MainOeuvre> mainOeuvres, double tva, double margin,double remise) {
 	    
 	    	 double totalMaterialCostBeforeTVA  = 0;
 	    	 double totalMainOeuvreCostBeforeTVA = 0;
@@ -108,9 +108,11 @@ public class Projet {
 	    	    double totalCostBeforeMargin = totalMaterialCostWithTVA + totalMainOeuvreCostWithVAT;
 	    	    // Calculate profit margin
 	    	    double profitMarginAmount = totalCostBeforeMargin * (margin / 100);
+	    	    // Calculate discount
+	    	    double discountAmount = totalCostBeforeMargin * (remise / 100);
+	    	    // Total final cost after applying the discount
+	    	    double finalTotalCost = totalCostBeforeMargin + profitMarginAmount - discountAmount;
 
-	    	 // Total final cost
-	    	    double finalTotalCost = totalCostBeforeMargin + profitMarginAmount;
 
 	    	 // Display results
 	    	    System.out.println("--- Détail des Coûts ---");
@@ -134,6 +136,7 @@ public class Projet {
 
 	    	    System.out.printf("3. Coût total avant marge : %.2f €%n", totalCostBeforeMargin);
 	    	    System.out.printf("4. Marge bénéficiaire (%.0f%%) : %.2f €%n", margin, profitMarginAmount);
+	    	    System.out.printf("5. Montant de la remise (%.0f%%) : %.2f €%n", remise, discountAmount);
 	    	    System.out.printf("**Coût total final du projet : %.2f €**%n", finalTotalCost);
 
 	    	    return finalTotalCost;

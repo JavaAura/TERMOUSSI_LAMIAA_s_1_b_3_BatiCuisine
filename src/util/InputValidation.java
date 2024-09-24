@@ -1,6 +1,7 @@
 package util;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +51,7 @@ public class InputValidation {
 	    }
 	  
 	  public static boolean validateDate(String dateStr) {
+		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	        try {
 	            LocalDate date = LocalDate.parse(dateStr);
 	            LocalDate today = LocalDate.now();

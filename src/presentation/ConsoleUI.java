@@ -82,7 +82,6 @@ public class ConsoleUI {
 
 	private void calculateProjectCost() {
 			System.out.println("--- Sélection d'un projet pour calcul du coût ---");
-		    System.out.print("Entrez le nom du projet : ");
 		    String projectName="";
 	        do {
 	            System.out.print("Entrez le nom du projet : ");
@@ -176,11 +175,36 @@ public class ConsoleUI {
 		    		       
 		    		    }
 		    		    
-		                double totalCost = selectedProjet.calculateTotalCost(materiaux, mainOeuvres, tva, margin);
+		    		    String applyRemise;
+		    		    do {
+		    		        System.out.print("Souhaitez-vous appliquer une remise au projet ? (y/n) : ");
+		    		        applyRemise = scanner.nextLine();
+		    		        
+		    		        if (!InputValidation.validateYesOrNo(applyRemise)) {
+		    		            System.out.println("Erreur : Veuillez entrer 'y' pour oui ou 'n' pour non.");
+		    		        }
+		    		    } while (!InputValidation.validateYesOrNo(applyRemise));
+		    		    
+		    		    double remise = 0;
+		    		    if (applyRemise.equalsIgnoreCase("y")) {
+		    		    	String remiseInput;
+		    		        do {
+		    		            System.out.print("Entrez le pourcentage de remise (%) : ");
+		    		            remiseInput = scanner.nextLine();
+
+		    		            if (InputValidation.validateDouble(remiseInput)) {
+		    		            	remise = Double.parseDouble(remiseInput);
+		    		            } else {
+		    		                System.out.println("Entrée invalide pour la remise. Veuillez entrer un nombre valide.");
+		    		            }
+		    		        } while (!InputValidation.validateDouble(remiseInput));
+		    		       
+		    		    }
+		    		    
+		                double totalCost = selectedProjet.calculateTotalCost(materiaux, mainOeuvres, tva, margin,remise);
 		                System.out.printf("Le coût total du projet '%s' est de : %.2f €%n", selectedProjet.getNomProjet(), totalCost);
 		                //Enregistrement du Devis
 		                System.out.println("--- Enregistrement du Devis ---");
-					    System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
 					    String validDateStr;
 				        while (true) {
 				            System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
