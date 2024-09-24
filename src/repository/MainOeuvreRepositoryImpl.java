@@ -51,7 +51,7 @@ public class MainOeuvreRepositoryImpl  implements MainOeuvreRepository{
     	String sql ="SELECT * FROM mainoeuvre";
     	try (PreparedStatement pstmt = connection.prepareStatement(sql)){
     	       ResultSet rs = pstmt.executeQuery();
-    	       if (rs.next()) {
+    	       while (rs.next()) {
     	    	   MainOeuvre mainOeuvre = new MainOeuvre(
                            rs.getString("nom"),
                            rs.getDouble("taux_TVA"),

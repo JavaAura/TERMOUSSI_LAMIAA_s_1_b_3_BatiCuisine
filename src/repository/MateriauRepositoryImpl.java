@@ -11,11 +11,13 @@ import database.DbConnection;
 import metier.EtatProjet;
 import metier.Materiau;
 import metier.Projet;
+import service.ProjetService;
 
 public class MateriauRepositoryImpl implements MateriauRepository {
 
 	private Connection connection;
-
+	private ProjetService projetService;
+	
     public MateriauRepositoryImpl() {
         this.connection = DbConnection.getInstance().getConnection();
     }
@@ -50,7 +52,7 @@ public class MateriauRepositoryImpl implements MateriauRepository {
     	String sql ="SELECT * FROM materiau";
     	try (PreparedStatement pstmt = connection.prepareStatement(sql)){
     	       ResultSet rs = pstmt.executeQuery();
-    	       if (rs.next()) {
+    	       while (rs.next()) {
     	    	   Materiau materiau = new Materiau(
                            rs.getString("nom"),
                            rs.getDouble("taux_TVA"),

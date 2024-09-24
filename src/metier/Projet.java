@@ -11,6 +11,8 @@ public class Projet {
 	    private EtatProjet etatProjet;  
 	    private int idClient;  
 	    
+	 
+	    
 	    public Projet() {
 	    }
 
@@ -82,69 +84,61 @@ public class Projet {
 	                '}';
 	    }
 
-	    public double calculateTotalCost(List<Materiau> materiaux, List<MainOeuvre> mainOeuvres, double tvaRate, double marginRate) {
+	    public double calculateTotalCost(List<Materiau> materiaux, List<MainOeuvre> mainOeuvres, double tva, double margin) {
 	    
-	    	 double totalMaterialsCost = 0;
-	    	    double totalMainOeuvreCost = 0;
+	    	 double totalMaterialCostBeforeTVA  = 0;
+	    	 double totalMainOeuvreCostBeforeTVA = 0;
 	    	    
 	    	    // Calculate total cost of materials
 	    	    for (Materiau materiau : materiaux) {
-	    	        double materialCost = (materiau.getCoutUnitaire() * materiau.getQuantite()) + materiau.getCoutTransport();
-	    	        double adjustedMaterialCost = materialCost * materiau.getCoefQualite();
-	    	        totalMaterialsCost += adjustedMaterialCost;
+	    	        double materialCost = (materiau.getQuantite() * materiau.getCoutUnitaire()) + materiau.getCoutTransport(); 
+	    	        totalMaterialCostBeforeTVA += materialCost;
 	    	    }
+	    	    double totalMaterialCostWithTVA = totalMaterialCostBeforeTVA + (totalMaterialCostBeforeTVA * tva / 100);
 	    	    
 	    	    // Calculate total cost of labor
 	    	    for (MainOeuvre mainOeuvre : mainOeuvres) {
-	    	        double laborCost = (mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail()) * mainOeuvre.getProductiviteOuvrier();
-	    	        totalMainOeuvreCost += laborCost; 
+	    	        double laborCost = mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail(); 
+	    	        totalMainOeuvreCostBeforeTVA += laborCost;
 	    	    }
+	    	    double totalMainOeuvreCostWithVAT = totalMainOeuvreCostBeforeTVA + (totalMainOeuvreCostBeforeTVA * tva / 100);
+	    	 
 	    	    
-	    	    // Total costs before applying taxes and margin
-	    	    double totalBeforeTaxes = totalMaterialsCost + totalMainOeuvreCost;
+	    	    // Total costs before  margin
+	    	    double totalCostBeforeMargin = totalMaterialCostWithTVA + totalMainOeuvreCostWithVAT;
+	    	    // Calculate profit margin
+	    	    double profitMarginAmount = totalCostBeforeMargin * (margin / 100);
 
-	    	    // Apply VAT (if applicable)
-	    	    double totalWithTVA = totalBeforeTaxes;
-	    	    if (tvaRate > 0) {
-	    	        totalWithTVA += totalBeforeTaxes * (tvaRate / 100);
-	    	    }
+	    	 // Total final cost
+	    	    double finalTotalCost = totalCostBeforeMargin + profitMarginAmount;
 
-	    	    // Apply profit margin (if applicable)
-	    	    double finalTotalCost = totalWithTVA;
-	    	    if (marginRate > 0) {
-	    	        finalTotalCost += totalWithTVA * (marginRate / 100);
-	    	    }
-
-	    	    // Print the detailed breakdown
-	    	    System.out.println("--- Résultat du Calcul ---");
-	    	    System.out.println("Nom du projet : " + this.getNomProjet());
-	    	    System.out.println("Client : " + this.getIdClient());//TODO: son nom
+	    	 // Display results
 	    	    System.out.println("--- Détail des Coûts ---");
-
 	    	    System.out.println("1. Matériaux :");
 	    	    for (Materiau materiau : materiaux) {
-	    	        System.out.printf("- %s : %.2f € (quantité : %.2f, coût unitaire : %.2f €/unité, qualité : %.2f, transport : %.2f €)%n", 
-	    	                materiau.getNom(), (materiau.getCoutUnitaire() * materiau.getQuantite()), materiau.getQuantite(), 
-	    	                materiau.getCoutUnitaire(), materiau.getCoefQualite(), materiau.getCoutTransport());
+	    	        double materialCost = (materiau.getQuantite() * materiau.getCoutUnitaire()) + materiau.getCoutTransport();
+	    	        System.out.printf("- %s : %.2f € (quantité : %.2f, coût unitaire : %.2f €/m², transport : %.2f €)%n", 
+	    	            materiau.getNom(), materialCost, materiau.getQuantite(), materiau.getCoutUnitaire(), materiau.getCoutTransport());
 	    	    }
-	    	    System.out.printf("**Coût total des matériaux avant TVA : %.2f €**%n", totalMaterialsCost);
-	    	    System.out.printf("**Coût total des matériaux avec TVA (%.2f%%) : %.2f €**%n", tvaRate, totalMaterialsCost * (1 + tvaRate / 100));
+	    	    System.out.printf("**Coût total des matériaux avant TVA : %.2f €**%n", totalMaterialCostBeforeTVA);
+	    	    System.out.printf("**Coût total des matériaux avec TVA (%.0f%%) : %.2f €**%n", tva, totalMaterialCostWithTVA);
 
 	    	    System.out.println("2. Main-d'œuvre :");
 	    	    for (MainOeuvre mainOeuvre : mainOeuvres) {
-	    	        System.out.printf("- %s : %.2f € (taux horaire : %.2f €/h, heures travaillées : %.2f h, productivité : %.2f)%n", 
-	    	                mainOeuvre.getNom(), (mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail()), 
-	    	                mainOeuvre.getTauxHoraire(), mainOeuvre.getHeuresTravail(), mainOeuvre.getProductiviteOuvrier());
+	    	        double laborCost = mainOeuvre.getTauxHoraire() * mainOeuvre.getHeuresTravail();
+	    	        System.out.printf("- %s : %.2f € (taux horaire : %.2f €/h, heures travaillées : %.2f h)%n", 
+	    	            mainOeuvre.getNom(), laborCost, mainOeuvre.getTauxHoraire(), mainOeuvre.getHeuresTravail());
 	    	    }
-	    	    System.out.printf("**Coût total de la main-d'œuvre avant TVA : %.2f €**%n", totalMainOeuvreCost);
-	    	    System.out.printf("**Coût total de la main-d'œuvre avec TVA (%.2f%%) : %.2f €**%n", tvaRate, totalMainOeuvreCost * (1 + tvaRate / 100));
+	    	    System.out.printf("**Coût total de la main-d'œuvre avant TVA : %.2f €**%n", totalMainOeuvreCostBeforeTVA);
+	    	    System.out.printf("**Coût total de la main-d'œuvre avec TVA (%.0f%%) : %.2f €**%n", tva, totalMainOeuvreCostWithVAT);
 
-	    	    System.out.printf("3. Coût total avant marge : %.2f €%n", totalBeforeTaxes);
-	    	    System.out.printf("4. Marge bénéficiaire (%.2f%%) : %.2f €%n", marginRate, totalWithTVA * (marginRate / 100));
-	    	//    System.out.printf("**Coût total final du projet : %.2f €**%n", finalTotalCost);
+	    	    System.out.printf("3. Coût total avant marge : %.2f €%n", totalCostBeforeMargin);
+	    	    System.out.printf("4. Marge bénéficiaire (%.0f%%) : %.2f €%n", margin, profitMarginAmount);
+	    	    System.out.printf("**Coût total final du projet : %.2f €**%n", finalTotalCost);
 
 	    	    return finalTotalCost;
 	    }
+
 	    
 	
 }

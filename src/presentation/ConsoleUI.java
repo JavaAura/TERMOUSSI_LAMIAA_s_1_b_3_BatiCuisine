@@ -93,15 +93,16 @@ public class ConsoleUI {
 		        if (projetOptional.isPresent()) {
 		            Projet selectedProjet = projetOptional.get();
 		            System.out.println("Projet trouvé : " + selectedProjet.getNomProjet());
-		            Optional<List<Materiau>> materiauxOptional = materiauService.getAllMateriaux();
-		            Optional<List<MainOeuvre>> mainOeuvresOptional = mainOeuvreService.getAllMainOeuvres();
+		            
+		           Optional<List<Materiau>> materiauxOptional = materiauService.getAllMateriaux();
+		           Optional<List<MainOeuvre>> mainOeuvresOptional = mainOeuvreService.getAllMainOeuvres();
 		            
 		            if (materiauxOptional.isPresent() && mainOeuvresOptional.isPresent()) {
 		                List<Materiau> allMateriaux = materiauxOptional.get();
 		                List<Materiau> materiaux = allMateriaux.stream()
 		                        .filter(materiau -> materiau.getIdProjet() == selectedProjet.getId())
 		                        .collect(Collectors.toList());
-
+		               
 		                List<MainOeuvre> allMainOeuvres = mainOeuvresOptional.get();
 		                List<MainOeuvre> mainOeuvres = allMainOeuvres.stream()
 		                        .filter(mainOeuvre -> mainOeuvre.getIdProjet() == selectedProjet.getId())
